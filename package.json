@@ -1,0 +1,27 @@
+{
+  "name": "mvphp",
+  "version": "1.0.0",
+  "description": "MVPHP is a simple, easily hackable framework for developing Minimally Viable PHP Web Applications.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
+    "animate.css": "^3.7.2",
+    "bootstrap": "^4.3.1",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-image-resize": "^0.13.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-terser": "^1.2.0",
+    "gulp-uglifycss": "^1.1.0",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.16.0"
+  }
+}

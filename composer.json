@@ -1,0 +1,17 @@
+{
+    "name": "cognize/mvphp",
+    "description": "A simple, easily hackable framework for developing Minimum Viable PHP Web Applications.",
+    "authors": [
+        {
+            "name": "Cognize LLC",
+            "email": "hello@cognize.co"
+        }
+    ],
+    "require": {
+        "delight-im/auth": "^8.1",
+        "swiftmailer/swiftmailer": "^6.2",
+        "knplabs/knp-snappy": "^1.1",
+        "h4cc/wkhtmltoimage-amd64": "^0.12.4",
+        "h4cc/wkhtmltopdf-amd64": "^0.12.4"
+    }
+}
