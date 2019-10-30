@@ -1,11 +1,11 @@
 ![MVPHP](/public/images/mvphp.jpg)
 
-MVPHP is a simple, easily hackable framework for developing Minimally Viable PHP Web Applications. Many PHP frameworks have a steep learning curve and have deeply abstracted their functionality. MVPHP is designed to keep things simple, easy, and closer to pure PHP. It also provides a simple and customizable implementation of Bootstrap for you to start creating a front-end without much hassle.
+MVPHP is a simple, easily hackable framework for developing Minimally Viable PHP Web Applications. Many PHP frameworks have a steep learning curve and have deeply abstracted their functionality. MVPHP is designed to keep things simple, easy, and closer to pure PHP. It also provides a simple and customizable implementation of Bootstrap for you to start creating a front end without much hassle.
 
 **What it includes:**
 
 * Routing
-* User registration, login, and forgot password using [delight-im/PHP-Auth](http://github.com)
+* User registration, login, and forgot password using [delight-im/PHP-Auth](http://github.com/delight-im/PHP-Auth)
 * [jQuery](https://jquery.com), [Bootstrap](https://getbootstrap.com), [Font Awesome](https://fontawesome.com/icons?d=gallery&m=free), and [Animate.css](https://github.com/daneden/animate.css)
 * [Gulp](https://gulpjs.com) with a few modules and a pre-configured gulpfile to build the front-end.
 * Bootstrap themes from [Bootswatch](https://github.com/thomaspark/bootswatch)
@@ -40,7 +40,7 @@ MVPHP is not a robust and well-tested PHP framework like Laravel, Symfony, Zend,
 
 The basic idea behind this framework is to start with one simple class that will handle all of the basic functionality.
 
-`app.php` is the bootstrap file that first loads our `config.php` settings, then and instantiates our main `$app` object. An `$auth` object is also instantiated for all authentication-related functionality. We point a property of our main object (`$app->auth`) to reference the `$auth` object to keep things simple and cohesive.
+`app.php` is the bootstrap file that first loads our `config.php` settings, then instantiates our main class by creating the `$app` object. An `$auth` object is also created for all authentication-related functionality. We point a property of our main object (`$app->auth`) to reference `$auth` in order to keep things simple and make it accessible within the scope of `$app`.
 
 ```php
 $app = new MVPHP();
@@ -62,7 +62,7 @@ $app->route('/example', function() use ($app) {
 });
 ```
 
-In this example, a closure is an anonymous function that will run when the request URI matches the route. In order for the methods in our main MVPHP class to be accessible inside of this anonymous function, we specify to `use ($app)` in order to import this variable into the anonymous function's variable scope.
+A closure is an anonymous function that will run when the request URI matches the route. In order for the methods in our main MVPHP class to be accessible inside of this anonymous function, we specify to `use ($app)`. This will import the `$app` variable into the anonymous function's variable scope.
 
 #### Handling Variable Parameters
 
@@ -170,7 +170,7 @@ The view templates are stored in the `views` directory. We can call a view (usua
 $app->view('my-template');
 ```
 
-This simply looks for `my-template.php` in the views folder and requires the file. If we have variables in the template file, we have to pass those into the view method, like this:
+This simply looks for `my-template.php` in the views folder and requires the file. If we have variables in the template file, we have to pass those into the view method like this:
 
 ```php
 $my_var1 = 'Stuff I want to echo in the template.';
@@ -200,13 +200,13 @@ You get the idea. Pure and simple PHP templating.
 
 ### Building the Frontend
 
-By default, the front-end uses [Bootstrap](https://getbootstrap.com). You can find all of the front-end source files in the `frontend` directory. The instructions to build the source files from the `frontend` folder are defined in the `gulpfile.js` file in the project root.
+By default, the front end uses [Bootstrap](https://getbootstrap.com). You can find all of the source files in the `frontend` directory. The instructions to build the source files from the `frontend` folder are defined in the `gulpfile.js` file in the project root.
 
 When you run `gulp` for the first time in the project root, the SCSS and JavaScript files were combined, minified, copied over to the `public` folder. Vendor JS and CSS files that we utilize (jQuery, Bootstrap, etc.) are also copied over to the `public` folder.
 
 #### Developing the Front-End
 
-Before editing the SCSS and JavaScript files in the `frontend` directory, you can run `gulp watch` in the project root. Gulp will watch for any changes you save to the files are save them as you go.
+Before editing the SCSS and JavaScript files in the `frontend` directory, you can run `gulp watch` in the project root. Gulp will watch for any changes you save to the files and save them as you go.
 
 ### Additional Functionality
 
@@ -220,4 +220,4 @@ More PDF and other "Documents" related functionality will be added in the future
 
 #### Misc
 
-Dig deeper into other available utility functions by looking at the `models/MVPHP.php` file, which contains our main class. More will be added in the future!
+Dig deeper into other available utility methods by looking at the `models/MVPHP.php` file, which contains our main class. More will be added in the future!
