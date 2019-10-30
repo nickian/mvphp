@@ -1,4 +1,4 @@
-![MVPHP](public/images/mvphp.png | width=300)
+![MVPHP](/public/images/mvphp.jpg)
 
 MVPHP is a simple, easily hackable framework for developing Minimally Viable PHP Web Applications. Many PHP frameworks have a steep learning curve and have deeply abstracted their functionality. MVPHP is designed to keep things simple, easy, and closer to pure PHP. It also provides a simple and customizable implementation of Bootstrap for you to start creating a front-end without much hassle.
 
