@@ -21,8 +21,10 @@ class MVPHP {
 	public $db;
 	public $auth;
 	public $uri; // URI string of request
-	public $host; // The subdomain
+	public $host_domain; // The full subdomain
+	public $host_name; // Name of subdomain
 	public $params; // array of request params
+	public $login_intent;
 	public $errors;
 	public $routes;
 	public $query_strings;
@@ -37,11 +39,13 @@ class MVPHP {
 	public function __construct() {
 
 		$this->uri = $_SERVER['REQUEST_URI'];
-		$this->host = explode('.', $_SERVER['HTTP_HOST'])[0];
+		$this->host_domain = $_SERVER['HTTP_HOST'];
+		$this->host_name= explode('.', $this->host_domain)[0];
 		$this->query_strings = [];
 		$this->errors = [];
 		$this->routes = ['registered' => [], 'match' => false];
-
+		$this->login_intent = null;
+		
 		try {
 
 		  $this->db = new PDO( 'mysql:host='.DB_HOST.';dbname='.DB_NAME,DB_USER,DB_PASSWORD );
@@ -85,7 +89,7 @@ class MVPHP {
 		}
 		include_once(APP_PATH.'/redirects.php');
 	}
-	
+
 
 	/*
 	|--------------------------------------------------------------------------
@@ -98,7 +102,7 @@ class MVPHP {
 		$stmt = $this->db->prepare($sql);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		$stmt->execute([
-    		':host' => $this->host
+    		':host' => $this->host_name
 		]);
 		$host = $stmt->fetch();
 		return $host;
@@ -134,7 +138,7 @@ class MVPHP {
 
 			// Parse the keys and the values
 			foreach($query_params as $query_param) {
-				
+
 				$q = explode('=', $query_param);
 
 					$query_strings[] = [
@@ -201,16 +205,16 @@ class MVPHP {
                    	    $constraint = 'string';
 	                    $name = $route_component;
                     }
-                  					
+
 					// Alpha numeric string
                     if ( $constraint == 'string' ) {
 
-                        if ( !preg_match('/^[a-zA-Z0-9-_]+$/', $this->params[$i]) ) {
+                        if ( !preg_match('/^[a-zA-Z0-9._-]+$/', $this->params[$i]) ) {
                             return false;
                         } else {
                             $map[$name] = $this->params[$i];
                         }
-					
+
 					// Integer
                     } elseif ( $constraint == 'int' ) {
 
@@ -219,10 +223,10 @@ class MVPHP {
                         } else {
                             $map[$name] = $this->params[$i];
                         }
-				
+
 					// Regular expression
                     } elseif ( explode('=', $constraint)[0] == 'regex' ) {
-	                    
+
 	                    $pattern = explode( 'regex=', $constraint )[1];
 	                    if ( !preg_match('/'.$pattern.'/', $this->params[$i]) ) {
 		                    return false;
@@ -365,7 +369,7 @@ class MVPHP {
 	| Search for something in a string
 	|--------------------------------------------------------------------------
 	*/
-	
+
     public function inString($needle, $haystack) {
         if ( strpos($haystack, $needle) !== false ) {
             return true;
@@ -408,20 +412,35 @@ class MVPHP {
 	*/
 
 	public function redirect($to, $from=false, $params=false) {
-
-		if (! empty($params) ) {
-			$query_string = http_build_query($params);
-			$url = APP_URL.$to.'/?'.$query_string;
+		
+		// Provided a full URL
+		if ( $this->inString('http', $to) ) {
+			$url = $to;
+		// Provided a relative URL
 		} else {
-			$url = APP_URL.$to;
+			// This is on a subdomain
+			if ( $this->host_domain != APP_DOMAIN ) {
+				$url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://'.$this->host_domain.$to;
+			// This on the main domain
+			} else {
+				$url = APP_URL.$to;
+			}
 		}
 
+		// Check for query strings, append them
+		if (! empty($params) ) {
+			$query_string = http_build_query($params);
+			$url = $url.'/?'.$query_string;
+		}
+
+		// This is an entry in redirects.php
 		if ( $from && $to ) {
 			if (  $this->uri == $from ) {
 				header('HTTP/1.1 301 Moved Permanently');
 				header('Location: '.$url);
 				exit();
 			}
+		// They only provided a "to" location
 		} else {
 			header('Location: '.$url);
 			exit();
@@ -497,7 +516,7 @@ class MVPHP {
 	| Test for the request method
 	|--------------------------------------------------------------------------
 	*/
-	
+
 	public function action($request_method) {
 		if ( strtolower($request_method) == strtolower($_SERVER['REQUEST_METHOD']) ) {
 			return true;
@@ -510,7 +529,7 @@ class MVPHP {
 	| Return specific HTTP error status codes
 	|--------------------------------------------------------------------------
 	*/
-	
+
 	public function http($code) {
 		if ( $code == 404 ) {
 			header('HTTP/1.1 404 Not Found');
@@ -542,7 +561,7 @@ class MVPHP {
 	| Decode JSON body request
 	|--------------------------------------------------------------------------
 	*/
-	
+
 	public function receiveJSON() {
 		return json_decode(file_get_contents('php://input'), true);
 	}
@@ -674,6 +693,39 @@ class MVPHP {
 
 		if ( empty($this->errors) ) {
 			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Remember the requested URL to forward to after login
+	|--------------------------------------------------------------------------
+	*/
+		
+	public function requireLogin() {
+		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://';
+		$requested_url = $protocol.$this->host_domain.$this->uri;
+		$_SESSION['login_intent'] = $requested_url;
+		$this->redirect(APP_URL.'/login');
+	}
+	
+
+	/*
+	|--------------------------------------------------------------------------
+	| Get the session variable to use after login to redirect user
+	|--------------------------------------------------------------------------
+	*/
+		
+	public function loginIntent() {
+		
+		$requested_url = $_SESSION['login_intent'];
+		
+		if ( isset($requested_url) ) {
+			return $requested_url;
 		} else {
 			return false;
 		}

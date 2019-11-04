@@ -2,7 +2,7 @@
 	
 if ( $app->auth->isLoggedIn() ) {	
 
-	if ($app->auth->hasRole(\Delight\Auth\Role::ADMIN)) {
+	if ($app->isAdmin()) {
 	
 	    $app->route('/admin', function() use ($app) {
 	
@@ -15,5 +15,5 @@ if ( $app->auth->isLoggedIn() ) {
 	}
 	
 } else {
-	$app->redirect('/login');
+	$app->requireLogin();
 }	

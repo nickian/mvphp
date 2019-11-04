@@ -29,6 +29,9 @@ if ( !file_exists('../config.php') ) {
 	}
 
 	$app = new MVPHP();
+	
+	ini_set('session.cookie_domain', '.'.APP_DOMAIN);
+	
 	$auth = new \Delight\Auth\Auth($app->db);
 	$app->auth = $auth;
 	

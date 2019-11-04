@@ -96,8 +96,8 @@
 								<?php $app->form('recover');?>
 								
 								<div class="text-center">
-									<a class="small" href="<?=APP_URL;?>/login">Login</a> | 
-									<?php if( REGISTRATION_ENABLED ):?><a class="small" href="<?=APP_URL;?>/create-account">Create Account</a><?php endif;?>
+									<a class="small" href="<?=APP_URL;?>/login">Login</a>
+									<?php if( REGISTRATION_ENABLED ):?> | <a class="small" href="<?=APP_URL;?>/create-account">Create Account</a><?php endif;?>
 								</div>
 							
 							<?php endif;?>

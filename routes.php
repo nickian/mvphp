@@ -1,36 +1,63 @@
 <?php
 
-// Home
-$app->route('/');
+// This is subdomain
+if ( $app->host_domain != APP_DOMAIN ) {
 
-// Login
-$app->route('/login');
+	// We have this subdomain registered in the hosts table
+	if ( $app->getHost() ){
 
-// Logout
-$app->route('/logout', function() use ($app) {
-	if ( $app->auth->isLoggedIn() ) {
-		$app->auth->logOut();
+		// Subdomain Home
+		$app->route('/', function() use ($app) {
+			echo $this->host_name;
+		});
+
+		// Everything else on subdomain
+		$app->route('/*', function() use ($app) {
+		    // Return a 404 error
+			$app->http(404);
+		});
+
+	// We don't have this subdomain in the hosts table
+	} else {
+		$app->http(404);
 	}
-	$app->redirect('/login');
-});
 
-// Create Account
-$app->route('/create-account');
+// Primary Website
+} else {
 
-// Profile
-$app->route('/profile');
+	// Home
+	$app->route('/');
 
-// Admin Area
-$app->route('/admin');
+	// Login
+	$app->route('/login');
 
-// API
-$app->route('/api');
+	// Logout
+	$app->route('/logout', function() use ($app) {
+		if ( $app->auth->isLoggedIn() ) {
+			$app->auth->logOut();
+		}
+		$app->redirect('/login');
+	});
 
-// Test
-$app->route('/test');
+	// Create Account
+	$app->route('/create-account');
 
-// Everything else
-$app->route('/*', function() use ($app) {
-    // Return a 404 error
-	$app->http(404);
-});
+	// Profile
+	$app->route('/profile');
+
+	// Admin Area
+	$app->route('/admin');
+
+	// API
+	$app->route('/api');
+
+	// Test
+	$app->route('/test');
+
+	// Everything else
+	$app->route('/*', function() use ($app) {
+	    // Return a 404 error
+		$app->http(404);
+	});
+
+}

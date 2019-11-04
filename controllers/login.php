@@ -7,34 +7,32 @@ $app->route('/login', function() use ($app) {
 		// The login form has been submitted
 	    if ( $app->action('post') ) {
 	    	
-	    	if ( isset($_POST['remember']) && $_POST['remember'] == 1 ) {
-	    	    $remember = true;
-	    	} else {
-		    		$remember = null;
-	    	}
-	    	
-	    	if ( $app->login($_POST['user'], $_POST['password'], $remember) ) {
+		    	if ( isset($_POST['remember']) && $_POST['remember'] == 1 ) {
+		    	    $remember = true;
+		    	} else {
+			    	$remember = null;
+		    	}
 		    	
-		    		// Did the user make a request to a protected page before being sent to the login screen?
-		    		if ( isset($_SESSION['initial_request']) ) {
+		    	if ( $app->login($_POST['user'], $_POST['password'], $remember) ) {
+			    	
+			    		// Did the user request a protected page before being sent here?
+			    		$request = $app->loginIntent();
 			    		
-		    			$this->redirect($_SESSION['initial_request']);
-		    	
-		    		} else {
-		    	
-		    			$this->redirect('/');
-		    	
-		    		}
-		    	
-	    	} else {
+			    		if ( $request ) {	
+			    			$this->redirect($request);
+			    		} else {
+			    			$this->redirect('/');
+			    		}
+			    	
+		    	} else {
 				$app->view('login', [
 					'errors' => $app->errors
 				]);
-	    	}
+		    	}
 	
 		// Show the login form
 	    } else {
-	    	$app->view('login');
+	    		$app->view('login');
 	    }
     
     } else {

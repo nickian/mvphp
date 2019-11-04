@@ -19,9 +19,8 @@ MVPHP is not a robust and well-tested PHP framework like Laravel, Symfony, Zend,
 
 ## Requirements
 
-* PHP 7.2
+* PHP 7+
 * MySQL 5.6
-* Apache 2 (not yet tested with NGINX)
 * Composer
 * Node.js to build the front-end files
 
@@ -29,10 +28,11 @@ MVPHP is not a robust and well-tested PHP framework like Laravel, Symfony, Zend,
 
 1. Clone this repository to your directory of choice.
 1. Run `composer install` in the project root.
+1. Run `npm install -g gulp-cli` to globally install the Gulp CLI
 1. Run `npm install` in the project root to install the tools we'll need to build the front-end files.
 1. Run `gulp` to build the front-end files.
-1. Create a virtual host in Apache pointing to the project root.
-1. Navigate to your domain your browser and run the installer.
+1. Point your webserver to the `public` directory.
+1. Navigate to your domain in your browser and run the installer.
 
 ## Basic Usage
 

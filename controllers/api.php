@@ -16,7 +16,6 @@ if ( $auth == true || ( isset($headers['X-API-KEY']) && $headers['X-API-KEY'] ==
 	// We're always returning JSON
 	$app->sendHeader('json');
 	
-	// Get accounts
 	$app->route('/api', function() use ($app) {
 		
 		$api = array(
